@@ -14,4 +14,4 @@ If there is sufficient quantity in stock, the app will update inventory in the d
 ![Alt text](/images/4.jpg?raw=true "Optional Title")
 
 If selected quantity is greater than available inventory, you will be notified of insufficient stock and prompted to begin your search again. (Excpet that part doesn't work yet.)
-![Alt text](/images/4.jpg?raw=true "Optional Title")
+![Alt text](/images/3.jpg?raw=true "Optional Title")
