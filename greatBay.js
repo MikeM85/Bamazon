@@ -11,87 +11,9 @@ var connection = mysql.createConnection({
 
 connection.connect(function(err) {
   if (err) throw err;
-  // console.log("connected as id ", connection.threadId);
-  
-  // connection.end();
 });
 
-// function runSearch() {
-//   inquirer
-//     .prompt({
-//       name: "action",
-//       type: "list",
-//       message: "What would you like to do?",
-//       choices: [
-//         "view products",
-//         "search by department",
-//         "search by price",
-//         "search inventory",
-//         "exit"
-//       ]
-//     })
-//     .then(function(answer) {
-//       switch (answer.action) {
-//       case "view products":
-//       displayProducts();
-//         break;
-
-//       case "search by department":
-//         deptSearch();
-//         break;
-
-//       case "search by price":
-//         rangeSearch();
-//         break;
-
-//       case "search inventory":
-//         songSearch();
-//         break;
-          
-//       case "exit":
-//         connection.end();
-//         break;
-//       }
-//     });
-// }
-
-// function displayProducts(answer) {
- 
-//   connection.query("SELECT * FROM bamazon_db.products;", function(err, res) {
-//     for (var i = 0; i < res.length; i++) {
-//             console.log(res[i].id + " | " + res[i].product_name + " | " + res[i].department_name + " | " + res[i].price);
-//           }
-//   });
-// }
-
-// function deptSearch() {
-//   inquirer
-//     .prompt({
-//       name: "action",
-//       type: "list",
-//       message: "What department would you like to search for?",
-//       choices: [
-//         "pets",
-//         "furniture",
-//         "garden",
-//         "office supplies",
-//         "exit"
-//       ]
-//     })
-//     .then(function(answer) {
-//       var query = "SELECT id, product_name, department_name, price FROM products WHERE ?";
-//       connection.query(query, { products: answer.products }, function(err, res) {
-//         for (var i = 0; i < res.length; i++) {
-//           console.log(res[i].department_name);
-//         }
-//         runSearch();
-//       });
-//     });
-// }
-
-// runSearch();
-
-// Show ids, names, and prices of products
+// Display products
 connection.query('SELECT * FROM `products`', function (err, results, fields) {
   if (err) {
     console.log(err);
@@ -99,7 +21,7 @@ connection.query('SELECT * FROM `products`', function (err, results, fields) {
   for (var i=0; i<results.length; i++) {
     console.log(results[i].id + " " + results[i].product_name + " [" + results[i].price + "]");
   }
-  // Prompt user to select a product and enter desired stock_quantity
+  // how to request an item
   function buyPrompt() {
     inquirer.prompt( [{
       name: "id",
@@ -112,10 +34,10 @@ connection.query('SELECT * FROM `products`', function (err, results, fields) {
     }]).then(function(answer) {
       for (var i=0; i<results.length; i++) {
         if (results[i].id === parseInt(answer.id)) {
-          // If order stock_quantity is too high, notify user of insufficient stock
+          // If order is higher than in stock, notify user
           if (results[i].stock_quantity < parseInt(answer.stock_quantity)) {
-            console.log("Insufficient stock!");
-            buyPrompt();
+            console.log("Out of stock!");
+            // buyPrompt();
           } else {
             // Calculate order total and remaining stock
             var total = parseFloat(answer.stock_quantity*results[i].price).toFixed(2);
@@ -131,13 +53,54 @@ connection.query('SELECT * FROM `products`', function (err, results, fields) {
               }
             });
 
-            // Notify user of successful purchase
+            //successful purchase
             console.log("You have purchased " + answer.stock_quantity + " " + results[i].product_name);
             console.log("Your order total is " + total);
+            // buyPrompt();
           }
         }
       }
     });
   }
-  buyPrompt();
+  // buyPrompt();
+  displayInventory();
+// });
+
+// displayInventory will retrieve the current inventory from the database and output it to the console
+function displayInventory() {
+	// console.log('___ENTER displayInventory___');
+
+	// Construct the db query string
+	queryStr = 'SELECT * FROM products';
+
+	// Make the db query
+	connection.query(queryStr, function(err, data) {
+		if (err) throw err;
+
+		console.log('Existing Inventory: ');
+		console.log('...................\n');
+
+		
+		for (var i = 0; i < data.length; i++) {
+			
+      
+      console.log(results[i].id + " " + results[i].product_name + " [" + results[i].price + "]");
+		}
+
+	  	console.log("---------------------------------------------------------------------\n");
+
+      //Prompt the user for item/quantity they would like to purchase
+      buyPrompt();
+    })
+}
+
+// runBamazon 
+function runBamazon() {
+
+	// Display the available inventory
+	displayInventory();
+}
+
+// Run the application logic
+runBamazon();
 });
